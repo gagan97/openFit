@@ -4,6 +4,7 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.abs
 
 /** One row of the recorded track. */
 data class TrackSample(
@@ -27,6 +28,15 @@ object TcxWriter {
     /** GPS coordinates need ~7 decimals (≈1 cm); rounding them destroys the route. */
     private fun coord(v: Double): String = String.format(Locale.US, "%.7f", v)
 
+    /**
+     * Health Services reports "sensor has no value" as [Double.MAX_VALUE] (or NaN/Inf) instead of
+     * null. Writing those out produces absurd numbers that break server-side import: Dreeve's
+     * combined-stream step overflows them to INF and aborts the activity's metrics pipeline for
+     * every subsequent run. Filter such values out of the file entirely.
+     */
+    private fun sane(v: Double?): Double? =
+        v?.takeIf { it.isFinite() && abs(it) < 1e30 }
+
     fun build(
         sport: String,
         samples: List<TrackSample>,
@@ -47,17 +57,17 @@ object TcxWriter {
         sb.append("<Id>").append(ts(startMs)).append("</Id>\n")
         sb.append("<Lap StartTime=\"").append(ts(startMs)).append("\">\n")
         sb.append("<TotalTimeSeconds>").append(totalSeconds).append("</TotalTimeSeconds>\n")
-        if (distanceMeters != null && distanceMeters > 0) {
-            sb.append("<DistanceMeters>").append(f1(distanceMeters)).append("</DistanceMeters>\n")
+        sane(distanceMeters)?.takeIf { it > 0 }?.let {
+            sb.append("<DistanceMeters>").append(f1(it)).append("</DistanceMeters>\n")
         }
-        if (calories != null && calories > 0) {
-            sb.append("<Calories>").append(calories.toInt()).append("</Calories>\n")
+        sane(calories)?.takeIf { it > 0 }?.let {
+            sb.append("<Calories>").append(it.toInt()).append("</Calories>\n")
         }
-        if (avgHr != null && avgHr > 0) {
-            sb.append("<AverageHeartRateBpm><Value>").append(avgHr.toInt()).append("</Value></AverageHeartRateBpm>\n")
+        sane(avgHr)?.takeIf { it > 0 }?.let {
+            sb.append("<AverageHeartRateBpm><Value>").append(it.toInt()).append("</Value></AverageHeartRateBpm>\n")
         }
-        if (maxHr != null && maxHr > 0) {
-            sb.append("<MaximumHeartRateBpm><Value>").append(maxHr.toInt()).append("</Value></MaximumHeartRateBpm>\n")
+        sane(maxHr)?.takeIf { it > 0 }?.let {
+            sb.append("<MaximumHeartRateBpm><Value>").append(it.toInt()).append("</Value></MaximumHeartRateBpm>\n")
         }
         sb.append("<Intensity>Active</Intensity>\n")
         sb.append("<TriggerMethod>Manual</TriggerMethod>\n")
@@ -65,19 +75,21 @@ object TcxWriter {
         for (s in samples) {
             sb.append("<Trackpoint>\n")
             sb.append("<Time>").append(ts(s.timeMillis)).append("</Time>\n")
-            if (s.lat != null && s.lon != null) {
-                sb.append("<Position><LatitudeDegrees>").append(coord(s.lat))
-                    .append("</LatitudeDegrees><LongitudeDegrees>").append(coord(s.lon))
+            val lat = sane(s.lat)
+            val lon = sane(s.lon)
+            if (lat != null && lon != null) {
+                sb.append("<Position><LatitudeDegrees>").append(coord(lat))
+                    .append("</LatitudeDegrees><LongitudeDegrees>").append(coord(lon))
                     .append("</LongitudeDegrees></Position>\n")
             }
-            if (s.altitude != null) {
-                sb.append("<AltitudeMeters>").append(f1(s.altitude)).append("</AltitudeMeters>\n")
+            sane(s.altitude)?.let {
+                sb.append("<AltitudeMeters>").append(f1(it)).append("</AltitudeMeters>\n")
             }
-            if (s.distanceMeters != null && s.distanceMeters > 0) {
-                sb.append("<DistanceMeters>").append(f1(s.distanceMeters)).append("</DistanceMeters>\n")
+            sane(s.distanceMeters)?.takeIf { it > 0 }?.let {
+                sb.append("<DistanceMeters>").append(f1(it)).append("</DistanceMeters>\n")
             }
-            if (s.heartRate != null && s.heartRate > 0) {
-                sb.append("<HeartRateBpm><Value>").append(s.heartRate.toInt()).append("</Value></HeartRateBpm>\n")
+            sane(s.heartRate)?.takeIf { it > 0 }?.let {
+                sb.append("<HeartRateBpm><Value>").append(it.toInt()).append("</Value></HeartRateBpm>\n")
             }
             sb.append("</Trackpoint>\n")
         }
