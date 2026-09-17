@@ -31,6 +31,6 @@ XML="<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
 printf '%s\n' "$XML" | "${ADB[@]}" shell "run-as ${PKG} sh -c 'mkdir -p shared_prefs && cat > shared_prefs/openfit_wear.xml'"
 
 echo "Wrote config to ${PKG} on the watch:"
-echo "  base: ${BASE}"
-echo "  key : ${KEY:0:8}… (hidden)"
+echo "  server: ${BASE}"
+echo "  api key: set (${#KEY} chars, not shown)"
 echo "Verify in the app: Settings → the sync status line should no longer show 'Dreeve not configured'."
