@@ -1,0 +1,65 @@
+name: Bug report
+description: Something is broken or behaves differently than documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please **do not** include real server URLs,
+        API keys, health data, or GPS tracks — use placeholders.
+  - type: input
+    id: version
+    attributes:
+      label: openFit version
+      description: Watch → Settings shows it (e.g. 0.8.3). The APK commit also helps.
+      placeholder: "0.8.3"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Watch / phone + OS version
+      placeholder: "Galaxy Watch 7, Wear OS 6 (Android 16) / Pixel 8, Android 15"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start a Walk
+        2. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Recording / sensors (GPS, HR, distance)
+        - Review gate (Done / Delete)
+        - Upload / sync
+        - Auto-pause
+        - UI / layout
+        - Phone app (map, list, upload)
+        - Build / install
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      description: |
+        If you can, capture a logcat while reproducing. Redact your server URL and key first:
+        `adb logcat | grep -i openfit`
+      render: shell
+    validations:
+      required: false
