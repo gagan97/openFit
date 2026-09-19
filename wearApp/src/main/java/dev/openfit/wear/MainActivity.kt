@@ -387,15 +387,30 @@ private fun PreStartScreen(sportKey: String, context: Context, onBack: () -> Uni
 
 // --- recording (3 swipeable pages) ---------------------------------------------
 
+/** Wall-clock time (HH:mm), like Strava shows in small type while recording. */
+private fun clockText(): String =
+    java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+
 @Composable
 private fun RecordingScreen(state: RecorderState, context: Context) {
     val pagerState = rememberPagerState(pageCount = { 3 })
+    // Recompute cheaply: only the minute changes, so this recomposes at most once a minute.
+    var clock by remember { mutableStateOf(clockText()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            val t = clockText()
+            if (t != clock) clock = t
+            delay(1000)
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.fillMaxSize(),
     ) {
+        Spacer(Modifier.height(4.dp))
+        Text(clock, style = MaterialTheme.typography.caption, color = MUTED)
         HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
             // Round-safe insets: keep page content well inside the circular display.
             Box(

@@ -1,0 +1,8 @@
+<resources>
+    <!-- Matches Dreeve's dark surface so launch doesn't flash white before Compose draws. -->
+    <style name="Theme.OpenFit" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#202830</item>
+        <item name="android:statusBarColor">#202830</item>
+        <item name="android:navigationBarColor">#202830</item>
+    </style>
+</resources>

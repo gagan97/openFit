@@ -12,8 +12,8 @@ android {
         applicationId = "dev.openfit"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4.0"
+        versionCode = 6
+        versionName = "0.5.0"
     }
 
     buildTypes {
@@ -33,6 +33,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -45,6 +46,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-core") // bottom-bar icons (BOM-managed)
     implementation(libs.play.services.wearable)
     implementation(libs.okhttp)
     implementation("org.osmdroid:osmdroid-android:6.1.20") // OpenStreetMap map view (no API key)

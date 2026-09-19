@@ -13,8 +13,8 @@ android {
         // Wear OS 3+ (Galaxy Watch 4 and newer); Galaxy Watch 7 runs Wear OS 5.
         minSdk = 30
         targetSdk = 34
-        versionCode = 15
-        versionName = "0.9.1"
+        versionCode = 16
+        versionName = "0.9.2"
     }
 
     buildTypes {

@@ -28,10 +28,24 @@ endpoint that accepts a TCX upload works the same way.
   display-only — files always stay metric), **Auto-pause** on/off.
 - Round-screen-safe icon controls; works standalone (no phone required) over Wi-Fi/LTE.
 
-**Phone app (`:phoneApp`, optional)**
-- Receives finished activities from the watch over the Wearable Data Layer (fallback path if the
-  watch can't upload directly), keeps them locally and shows **route maps** (osmdroid/OpenStreetMap).
-- Configurable **server URL + API key**, "Sync pending" button.
+## Phone app (`:phoneApp`, optional)
+
+The phone app is a **companion for your Dreeve instance**: it shows your own dashboard, activities,
+segments, best efforts, heatmap, Eddington, milestones, monthly stats, rewind, badges and gear —
+each as its own screen — plus the parts a browser can't do: the upload queue for activities the watch
+handed over, server configuration, and offline route maps.
+
+It renders **your own Dreeve pages** inside the app (so every stat, chart and map behaves exactly as on
+your server, including features added in future Dreeve releases) with Dreeve's own chrome hidden and the
+app's native navigation in its place. No extra server component, no cloud service.
+
+- Configurable **server URL + API key** with a **Test connection** button (`GET /api/v1/status`)
+- **Sync** tab: upload queue, per-item status, manual sync, local list + OpenStreetMap route view
+- **GPX export** of any activity (saved to Downloads from the activity screen)
+- Appearance: system / light / dark — applied to the embedded pages too
+- Works with any Dreeve instance; only `example.com`-style placeholders in this repo
+
+Technical notes for contributors live in `docs/design/phone-app.md`.
 
 ## Requirements
 - A Wear OS 3+ watch (developed on Wear OS 6). Heart rate requires the usual sensor permissions —
